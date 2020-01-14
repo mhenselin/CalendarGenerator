@@ -1,0 +1,36 @@
+<html>
+<body>
+<style>
+    body {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+     .calendar {
+         border: 1px solid #c63131;
+         padding: 0.5em;
+         grid-template-columns: auto auto;
+         display: grid;
+     }
+
+     .month {
+     }
+    .month_name {
+        font-size: 1em;
+    }
+
+
+</style>
+<div class="calendar">
+    {% for month in calendar %}
+        <div class="month">
+            <div class="month_name">{{ month.name }}</div>
+            {% for day in month.days %}
+                <div class="day">
+                    <div class="day_of_month">{{ day.getDayOfMonth }}</div>
+                    <div class="day_of_week">{{ day.getWeekdayName }}</div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+</div>
+</body>
+</html>
