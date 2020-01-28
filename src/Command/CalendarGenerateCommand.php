@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Calendar\Calendar;
+use App\Renderer\YearplannerTwig;
 use App\Repository\HolidaysRepository;
 use App\Serializer\Normalizer\HolidaysNormalizer;
 use Mpdf\Mpdf;
@@ -45,18 +46,12 @@ class CalendarGenerateCommand extends Command
         $calendar->setEvents($this->holidayRepo->getHolidays());
         $calendar->generateCalendarData();
 
-        var_dump($calendar->getData());
+        #var_dump($calendar->getData());
+        $renderer = new YearplannerTwig($this->twig);
+        $renderer->setCalendarData($calendar->getData());
+        $renderer->renderData();
 
-        $html = $this->twig->render(
-            'calendar/yearlyplaner/calendar.html.twig',
-            ['calendar' => $calendar->getData()]);
-        var_dump($html);
 
-        $mpdf = new Mpdf();
-        $mpdf->WriteHTML($html);
-        $mpdf->Output('/Users/mathias.kuehn/priv-sources/CalendarGenerator/test.pdf', Destination::FILE);
-
-        file_put_contents('/tmp/calendertest.html', $html);
 
         if ($arg1) {
             $io->note(sprintf('You passed an argument: %s', $arg1));
