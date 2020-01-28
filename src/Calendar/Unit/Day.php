@@ -57,26 +57,6 @@ class Day
         return $this->date->format($showWeekdayName ? 'j D' : 'j');
     }
 
-    public function getBankHolidayIn()
-    {
-        return $this->bankHoliday;
-    }
-
-    public function hasBankHolidays()
-    {
-        return (empty($this->bankHoliday));
-    }
-
-    public function getSchoolHolidayIn()
-    {
-        return $this->schoolHoliday;
-    }
-
-    public function hasSchoolHolidays()
-    {
-        return (empty($this->schoolHoliday));
-    }
-
     public function getEvents()
     {
         return $this->events;

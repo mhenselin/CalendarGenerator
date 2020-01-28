@@ -1,36 +1,87 @@
 <html>
 <body>
 <style>
+    * {
+        box-sizing: border-box;
+    }
     body {
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     }
-     .calendar {
-         border: 1px solid #c63131;
-         padding: 0.5em;
-         grid-template-columns: auto auto;
-         display: grid;
+    .calendar_div {
+     border: 1px solid #c63131;
+     padding: 0.5em;
+    }
+     .cal_table {
      }
 
-     .month {
+    table {
+        border-spacing: 0;
+        border-collapse: collapse;
+        width: 100%;
      }
-    .month_name {
-        font-size: 1em;
+
+    td, th {
+        padding: 0;
     }
 
+    .cal_header {
+    }
+
+    .cal_header_cell {
+        font-size: 0.7em;
+        color: #c63131;
+        border-bottom: 1px solid #DEDEDE;
+        padding: 3px;
+    }
+    .cal_cell {
+        font-size: 0.6em;
+        padding: 0 1px;
+        width: 8.3%;
+        height: 23px!important;
+        border-bottom: 1px solid silver;
+    }
+    .cal_day_cell {
+        #border-bottom: 1px solid silver;
+        display: block;
+    }
+    .cal_day_cell_date {
+        #margin-top: 4px;
+    }
+    .cal_day_cell_text {
+    }
 
 </style>
-<div class="calendar">
-    {% for month in calendar %}
-        <div class="month">
-            <div class="month_name">{{ month.name }}</div>
-            {% for day in month.days %}
-                <div class="day">
-                    <div class="day_of_month">{{ day.getDayOfMonth }}</div>
-                    <div class="day_of_week">{{ day.getWeekdayName }}</div>
-                </div>
+<div class="calendar_div">
+    <table class="cal_table" cellspacing="0" cellpadding="0">
+        <thead>
+            <tr class="cal_header">
+            {% for month in calendar %}
+                <th class="cal_header_cell">{{ month.name }}</th>
             {% endfor %}
-        </div>
-    {% endfor %}
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for day in 1..31 %}
+            <tr class="cal_body_row">
+            {% for month in calendar %}
+                {% set dayOfMonth=month.getDayOfMonth(day) %}
+                <td class="cal_cell">
+                    <div class="cal_day_cell">
+                        <div class="cal_day_cell_date">
+                        {% if dayOfMonth %}
+                            {{ dayOfMonth.getDayOfMonth }} {{ dayOfMonth.getWeekdayName }}
+                        {% endif %}
+                        </div>
+                        <div class="cal_day_cell_text"></div>
+                    </div>
+                </td>
+            {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
 </div>
 </body>
 </html>

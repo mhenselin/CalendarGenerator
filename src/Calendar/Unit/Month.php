@@ -44,4 +44,9 @@ class Month
     {
         return $this->year;
     }
+
+    public function getDayOfMonth(int $day): ?Day
+    {
+        return isset($this->days[$day]) ? $this->days[$day] : null;
+    }
 }
