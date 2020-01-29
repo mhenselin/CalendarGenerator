@@ -27,7 +27,10 @@ class Calendar
         $this->resetCalendar();
 
         for ($i=0; $i<$numberOfMonths; $i++) {
-            $month = new Month($date->format('F'), $date->format('Y'));
+            $month = new Month(
+                strftime('%B', $date->getTimestamp()),
+                $date->format('Y')
+            );
             for ($day=1; $day<=$date->format('t'); $day++) {
                 $month->addDay(
                     $this->prepareDayObject($date->format('Y-m') . '-' . $day)

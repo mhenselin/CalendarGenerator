@@ -3,11 +3,9 @@
 namespace App\Command;
 
 use App\Calendar\Calendar;
+use App\Renderer\LandscapeYear;
 use App\Renderer\YearplannerTwig;
 use App\Repository\HolidaysRepository;
-use App\Serializer\Normalizer\HolidaysNormalizer;
-use Mpdf\Mpdf;
-use Mpdf\Output\Destination;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -38,6 +36,8 @@ class CalendarGenerateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        setlocale(LC_TIME, 'de_DE');
+
         $io = new SymfonyStyle($input, $output);
         $arg1 = $input->getArgument('arg1');
 
@@ -51,6 +51,9 @@ class CalendarGenerateCommand extends Command
         $renderer->setCalendarData($calendar->getData());
         $renderer->renderData();
 
+        $cal2 = new LandscapeYear();
+        $cal2->initCalender(1, 1, 2020);
+        $cal2->render();
 
 
         if ($arg1) {
