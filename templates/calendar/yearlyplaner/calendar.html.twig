@@ -1,54 +1,54 @@
 <html>
+<head>
+    <link rel="stylesheet" media="screen" href="./test.css">
+</head>
 <body>
-<style>
-    * {
-        box-sizing: border-box;
-    }
+<style >
     body {
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
     }
+
     .calendar_div {
-     border: 1px solid #c63131;
-     padding: 0.5em;
     }
-     .cal_table {
-     }
 
     table {
-        border-spacing: 0;
-        border-collapse: collapse;
+        border: 1px solid #c63131;
         width: 100%;
-     }
-
-    td, th {
-        padding: 0;
+        height: 100%;
+        border-spacing: 1px 0px;
+        border-collapse: separate;
     }
 
-    .cal_header {
+    table td {
+        border-bottom: 1px solid #DADADA;
+    }
+
+    .cal_table {
+        #height: 800px;
     }
 
     .cal_header_cell {
-        font-size: 0.7em;
-        color: #c63131;
-        border-bottom: 1px solid #DEDEDE;
-        padding: 3px;
+        font-size: 9pt;
     }
+
     .cal_cell {
-        font-size: 0.6em;
-        padding: 0 1px;
-        width: 8.3%;
-        height: 23px!important;
-        border-bottom: 1px solid silver;
+        width:8.33333%;
+        padding-left: 4px;
     }
+
     .cal_day_cell {
-        #border-bottom: 1px solid silver;
-        display: block;
+        font-size: 6pt;
+        #height: 3.26%;
+        line-height: 12px;
     }
-    .cal_day_cell_date {
-        #margin-top: 4px;
+
+    .weekday_6 {
+        background-color: #F8E6E6;
     }
-    .cal_day_cell_text {
+    .weekday_7 {
+        background-color: #F3D5D5;
     }
+
 
 </style>
 <div class="calendar_div">
@@ -66,11 +66,11 @@
             <tr class="cal_body_row">
             {% for month in calendar %}
                 {% set dayOfMonth=month.getDayOfMonth(day) %}
-                <td class="cal_cell">
+                <td class="cal_cell {% if dayOfMonth %} weekday_{{ dayOfMonth.getDayOfWeek }}{% endif %}">
                     <div class="cal_day_cell">
                         <div class="cal_day_cell_date">
                         {% if dayOfMonth %}
-                            {{ dayOfMonth.getDayOfMonth }} {{ dayOfMonth.getWeekdayName }}
+                            {{ '%02d' |format(dayOfMonth.getDay) }} {{ dayOfMonth.getWeekdayName | upper }}
                         {% endif %}
                         </div>
                         <div class="cal_day_cell_text"></div>

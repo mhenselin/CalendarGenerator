@@ -2,12 +2,11 @@
 
 namespace App\Renderer;
 
-use App\Calendar\Unit\Month;
 use Mpdf\Mpdf;
 use Mpdf\Output\Destination;
 use Twig\Environment;
 
-class YearplannerTwig
+class YearplannerTwig implements RendererInterface
 {
     private $calendarData;
 
@@ -18,13 +17,6 @@ class YearplannerTwig
         $this->twig = $twig;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getCalendarData()
-    {
-        return $this->calendarData;
-    }
 
     /**
      * @param mixed $calendarData
@@ -44,10 +36,10 @@ class YearplannerTwig
 
         $mpdf = new Mpdf([
             'format' => 'A4-L',
-            'margin_left' => 2,
-            'margin_right' => 2,
+            'margin_left' => 5,
+            'margin_right' => 5,
             'margin_top' => 10,
-            'margin_bottom' => 2,
+            'margin_bottom' => 5,
         ]);
         $mpdf->SetDisplayMode('fullpage');
         $mpdf->WriteHTML($html);

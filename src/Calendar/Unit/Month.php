@@ -27,7 +27,7 @@ class Month
 
     public function addDay(Day $day): void
     {
-        $this->days[$day->getDayOfMonth()] = $day;
+        $this->days[$day->getDay()] = $day;
     }
 
     public function getDays(): array
