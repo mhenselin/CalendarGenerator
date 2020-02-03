@@ -40,9 +40,9 @@ class Month
         return $this->name;
     }
 
-    public function getYear():string
+    public function getYear(bool $short=false):string
     {
-        return $this->year;
+        return !$short ? $this->year : substr($this->year, -2);
     }
 
     public function getDayOfMonth(int $day): ?Day

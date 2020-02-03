@@ -2,11 +2,12 @@
 
 namespace App\Renderer;
 
+use Dompdf\Dompdf;
 use Mpdf\Mpdf;
 use Mpdf\Output\Destination;
 use Twig\Environment;
 
-class YearplannerTwig implements RendererInterface
+class LandscapeYearTwig implements RendererInterface
 {
     private $calendarData;
 
@@ -39,14 +40,21 @@ class YearplannerTwig implements RendererInterface
             'margin_left' => 5,
             'margin_right' => 5,
             'margin_top' => 10,
-            'margin_bottom' => 5,
+            'margin_bottom' => 0,
         ]);
+
+        $mpdf->setLogger(new class extends \Psr\Log\AbstractLogger {
+            public function log($level, $message, $context=[])
+            {
+                echo $level . ': ' . $message . PHP_EOL;
+            }
+        });
+
         $mpdf->SetDisplayMode('fullpage');
         $mpdf->WriteHTML($html);
         $mpdf->Output('/Users/mathias.kuehn/priv-sources/CalendarGenerator/test.pdf', Destination::FILE);
 
         file_put_contents('/Users/mathias.kuehn/priv-sources/CalendarGenerator/calendertest.html', $html);
-        var_dump($html);
         return $returnOutput ? $html : null;
     }
 

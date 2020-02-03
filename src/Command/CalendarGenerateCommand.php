@@ -4,7 +4,8 @@ namespace App\Command;
 
 use App\Calendar\Calendar;
 use App\Renderer\LandscapeYear;
-use App\Renderer\YearplannerTwig;
+use App\Renderer\LandscapeYearMpdf;
+use App\Renderer\LandscapeYearTwig;
 use App\Repository\HolidaysRepository;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -46,8 +47,11 @@ class CalendarGenerateCommand extends Command
         $calendar->setEvents($this->holidayRepo->getHolidays());
         $calendar->generateCalendarData();
 
-        #var_dump($calendar->getData());
-        $renderer = new YearplannerTwig($this->twig);
+        $renderer = new LandscapeYearTwig($this->twig);
+        $renderer->setCalendarData($calendar->getData());
+        $renderer->renderData();
+
+        $renderer = new LandscapeYearMpdf($this->twig);
         $renderer->setCalendarData($calendar->getData());
         $renderer->renderData();
 
