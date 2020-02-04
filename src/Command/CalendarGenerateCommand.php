@@ -3,10 +3,10 @@
 namespace App\Command;
 
 use App\Calendar\Calendar;
+use App\Renderer\LandscapeYear;
+use App\Renderer\LandscapeYearMpdf;
+use App\Renderer\LandscapeYearTwig;
 use App\Repository\HolidaysRepository;
-use App\Serializer\Normalizer\HolidaysNormalizer;
-use Mpdf\Mpdf;
-use Mpdf\Output\Destination;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -37,6 +37,8 @@ class CalendarGenerateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        setlocale(LC_TIME, 'de_DE');
+
         $io = new SymfonyStyle($input, $output);
         $arg1 = $input->getArgument('arg1');
 
@@ -45,18 +47,18 @@ class CalendarGenerateCommand extends Command
         $calendar->setEvents($this->holidayRepo->getHolidays());
         $calendar->generateCalendarData();
 
-        var_dump($calendar->getData());
+        $renderer = new LandscapeYearTwig($this->twig);
+        $renderer->setCalendarData($calendar->getData());
+        $renderer->renderData();
 
-        $html = $this->twig->render(
-            'calendar/yearlyplaner/calendar.html.twig',
-            ['calendar' => $calendar->getData()]);
-        var_dump($html);
+        $renderer = new LandscapeYearMpdf($this->twig);
+        $renderer->setCalendarData($calendar->getData());
+        $renderer->renderData();
 
-        $mpdf = new Mpdf();
-        $mpdf->WriteHTML($html);
-        $mpdf->Output('/Users/mathias.kuehn/priv-sources/CalendarGenerator/test.pdf', Destination::FILE);
+        $cal2 = new LandscapeYear();
+        $cal2->initCalender(1, 1, 2020);
+        $cal2->render();
 
-        file_put_contents('/tmp/calendertest.html', $html);
 
         if ($arg1) {
             $io->note(sprintf('You passed an argument: %s', $arg1));

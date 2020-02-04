@@ -27,7 +27,7 @@ class Month
 
     public function addDay(Day $day): void
     {
-        $this->days[$day->getDayOfMonth()] = $day;
+        $this->days[$day->getDay()] = $day;
     }
 
     public function getDays(): array
@@ -40,8 +40,13 @@ class Month
         return $this->name;
     }
 
-    public function getYear():string
+    public function getYear(bool $short=false):string
     {
-        return $this->year;
+        return !$short ? $this->year : substr($this->year, -2);
+    }
+
+    public function getDayOfMonth(int $day): ?Day
+    {
+        return isset($this->days[$day]) ? $this->days[$day] : null;
     }
 }
