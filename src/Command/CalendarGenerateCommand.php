@@ -42,7 +42,7 @@ class CalendarGenerateCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $arg1 = $input->getArgument('arg1');
 
-        $this->holidayRepo->loadHolidays('Bayern');
+        $this->holidayRepo->loadHolidaysFromCsv('Bayern');
         $calendar = new Calendar(new \DateTime('2020-01'));
         $calendar->setEvents($this->holidayRepo->getHolidays());
         $calendar->generateCalendarData();

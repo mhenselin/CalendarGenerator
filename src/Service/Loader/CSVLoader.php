@@ -1,17 +1,14 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Loader;
 
 use App\Calendar\Event\HolidayEvent;
-use App\Repository\HolidaysRepository;
 use App\Serializer\Normalizer\HolidayCalendarNormalizer;
 use Symfony\Component\Serializer\Encoder\CsvEncoder;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\SerializerInterface;
 
-class CSVLoader
+class CSVLoader extends LoaderAbstract
 {
     private $serializer;
 
@@ -26,7 +23,7 @@ class CSVLoader
         );
     }
 
-    public function readHolidaysFromFile(string $federal)
+    public function readHolidays(string $federal): array
     {
         $filename = $this->getDataPath() . '/holidays/Holidays_' . $federal . '.csv';
         if (!file_exists($filename)) {
@@ -39,10 +36,5 @@ class CSVLoader
             $holidays[] = $this->serializer->denormalize($data, HolidayEvent::class);
         }
         return $holidays;
-    }
-
-    private function getDataPath()
-    {
-        return realpath(__DIR__ . '/../../data');
     }
 }

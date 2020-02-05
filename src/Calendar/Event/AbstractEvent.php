@@ -54,7 +54,7 @@ abstract class AbstractEvent
 
     public function setAdditionalInformation(array $info): void
     {
-        $this->color = additionalInformation;
+        $this->additionalInformation = $info;
     }
 
     public function dayHasEvent(\DteTime $day): bool

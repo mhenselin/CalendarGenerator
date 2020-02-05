@@ -4,6 +4,8 @@
     "require": {
         "php": "^7.3",
         "ext-ctype": "*",
+        "ext-curl": "*",
+        "ext-json": "*",
         "ext-iconv": "*",
         "mpdf/mpdf": "^8.0",
         "rybakit/msgpack": "^0.6.1",

@@ -8,7 +8,6 @@ use Symfony\Component\Serializer\SerializerAwareTrait;
 
 class HolidayCalendarNormalizer extends AbstractCalendarNormalizer
 {
-    const DEFAULT_COLOR_BANK_HOLIDAY = '';
     use SerializerAwareTrait;
 
     public function normalize($object, string $format = null, array $context = [])
@@ -30,7 +29,7 @@ class HolidayCalendarNormalizer extends AbstractCalendarNormalizer
 
     public function supportsNormalization($data, string $format = null)
     {
-        return is_subclass_of($format, Event::class);
+        return is_subclass_of($format, AbstractEvent::class);
     }
 
     public function getClass()

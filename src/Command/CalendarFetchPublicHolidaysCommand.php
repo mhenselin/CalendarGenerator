@@ -2,6 +2,10 @@
 
 namespace App\Command;
 
+use App\Repository\HolidaysRepository;
+use App\Service\ApiCrawler;
+use MessagePack\MessagePack;
+use MessagePack\Packer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -11,31 +15,47 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class CalendarFetchPublicHolidaysCommand extends Command
 {
-    protected static $defaultName = 'calendar:fetch:public-holidays';
+    protected static $defaultName = 'calendar:fetch:holidays';
+
+    /** @var HolidaysRepository */
+    private $holidayRepo;
+
+    /** @var ApiCrawler */
+    private $apiCrawler;
+
+    public function __construct(string $name = null, HolidaysRepository $holidaysRepository, ApiCrawler $apiCrawler)
+    {
+        $this->holidayRepo = $holidaysRepository;
+        $this->apiCrawler = $apiCrawler;
+        parent::__construct($name);
+    }
 
     protected function configure()
     {
         $this
-            ->setDescription('Add a short description for your command')
-            ->addArgument('arg1', InputArgument::OPTIONAL, 'Argument description')
-            ->addOption('option1', null, InputOption::VALUE_NONE, 'Option description')
+            ->setDescription('Fetches holidays from https://deutsche-feiertage-api.de to store in local file')
+            ->addArgument('holidayTypes', InputArgument::REQUIRED, 'Which type to fetch - [public, school]')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $arg1 = $input->getArgument('arg1');
 
-        if ($arg1) {
-            $io->note(sprintf('You passed an argument: %s', $arg1));
+        if ($input->hasArgument('holidayTypes')) {
+            $holidayTypes = explode(',', $input->getArgument('holidayTypes'));
         }
 
-        if ($input->getOption('option1')) {
-            // ...
+        if (in_array('public', $holidayTypes)) {
+            $result = $this->apiCrawler->fetchFromDFAPI();
+            $this->holidayRepo->saveHolidaysToPacked($result);
+
+            $io->success('Successfully loaded data from https://deutsche-feiertage-api.de');
         }
 
-        $io->success('You have a new command! Now make it your own! Pass --help to see your options.');
+        if (in_array('school', $holidayTypes)) {
+            $io->error('Fetching school holiday not supported yet');
+        }
 
         return 0;
     }
