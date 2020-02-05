@@ -49,11 +49,11 @@ class CalendarGenerateCommand extends Command
 
         $renderer = new LandscapeYearTwig($this->twig);
         $renderer->setCalendarData($calendar->getData());
-        $renderer->renderData();
+        $renderer->renderData(realpath(__DIR__ . '/../../') . '/test.pdf');
 
         $renderer = new LandscapeYearMpdf($this->twig);
         $renderer->setCalendarData($calendar->getData());
-        $renderer->renderData();
+        $renderer->renderData(realpath(__DIR__ . '/../../') . '/test_direct.pdf');
 
         $cal2 = new LandscapeYear();
         $cal2->initCalender(1, 1, 2020);

@@ -57,6 +57,7 @@ class LandscapeYearMpdf extends MpdfRendererAbstract
 
         if (!empty($file)) {
             $this->mpdf->Output($file, Destination::FILE);
+            return '';
         } else {
             return $this->mpdf->Output();
         }

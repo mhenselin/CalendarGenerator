@@ -2,7 +2,7 @@
 
 namespace App\Renderer;
 
-use Dompdf\Dompdf;
+use App\Renderer\Pdf\RendererInterface;
 use Mpdf\Mpdf;
 use Mpdf\Output\Destination;
 use Twig\Environment;
@@ -27,7 +27,7 @@ class LandscapeYearTwig implements RendererInterface
         $this->calendarData = $calendarData;
     }
 
-    public function renderData(bool $returnOutput=false): ?string
+    public function renderData(string $file=''): ?string
     {
         $html = $this->twig->render(
             'calendar/yearlyplaner/calendar.html.twig',
@@ -52,10 +52,13 @@ class LandscapeYearTwig implements RendererInterface
 
         $mpdf->SetDisplayMode('fullpage');
         $mpdf->WriteHTML($html);
-        $mpdf->Output('/Users/mathias.kuehn/priv-sources/CalendarGenerator/test.pdf', Destination::FILE);
 
-        file_put_contents('/Users/mathias.kuehn/priv-sources/CalendarGenerator/calendertest.html', $html);
-        return $returnOutput ? $html : null;
+        if (!empty($file)) {
+            $mpdf->Output($file, Destination::FILE);
+            return '';
+        } else {
+            return $mpdf->Output();
+        }
     }
 
 }

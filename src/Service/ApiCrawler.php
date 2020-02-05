@@ -18,9 +18,7 @@ class ApiCrawler
                 'X-DFA-Token: dfa')
         );
 
-        #$result = curl_exec($ch);
-        $result = file_get_contents(realpath(__DIR__ . '/../../data') . '/response.json');
-
+        $result = curl_exec($ch);
         $data = json_decode($result, true);
         if ($data['result'] == true) {
             foreach ($data['holidays'] as $key => $holiday) {
