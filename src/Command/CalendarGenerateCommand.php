@@ -30,8 +30,9 @@ class CalendarGenerateCommand extends Command
     {
         $this
             ->setDescription('Add a short description for your command')
-            ->addArgument('arg1', InputArgument::OPTIONAL, 'Argument description')
+            ->addArgument('startdate', InputArgument::REQUIRED, 'Argument description')
             ->addOption('option1', null, InputOption::VALUE_NONE, 'Option description')
+            ->addOption('publicholidays', null, InputOption::VALUE_OPTIONAL, 'IUse public holidays for federal country')
         ;
     }
 
@@ -40,33 +41,40 @@ class CalendarGenerateCommand extends Command
         setlocale(LC_TIME, 'de_DE');
 
         $io = new SymfonyStyle($input, $output);
-        $arg1 = $input->getArgument('arg1');
+        $arg1 = $input->getArgument('startdate');
+        $publicHolidaysFor = $input->getOption('publicholidays');
 
-        $this->holidayRepo->loadHolidaysFromCsv('Bayern');
-        $calendar = new Calendar(new \DateTime('2020-01'));
-        $calendar->setEvents($this->holidayRepo->getHolidays());
+        $startDate = new \DateTime($arg1);
+        $calendar = new Calendar($startDate);
+        $io->title('Starting calender generation with startdate ' . $startDate->format('Y-m-d'));
+
+        $io->text('* loading holidays for ' . $publicHolidaysFor);
+        $holidays = $this->holidayRepo->getPackedHolidays($publicHolidaysFor);
+        $calendar->addEvents($holidays);
+
+        //TODO: add argument/option for csv-files when not fetching data beforehand
+        #$this->holidayRepo->loadHolidaysFromCsv('Bayern');
+        #$calendar->setEvents($this->holidayRepo->getHolidays());
+        $io->text('* generating calendar');
         $calendar->generateCalendarData();
 
-        $renderer = new LandscapeYearTwig($this->twig);
+        //TODO: add argument/option to decide which renderer
+        #$renderer = new LandscapeYearTwig($this->twig);
+        #$renderer->setCalendarData($calendar->getData());
+        #$renderer->renderData(realpath(__DIR__ . '/../../') . '/test.pdf');
+
+        $io->text('* rendering calendar');
+        $io->newLine();
+        $renderer = new LandscapeYearMpdf();
         $renderer->setCalendarData($calendar->getData());
-        $renderer->renderData(realpath(__DIR__ . '/../../') . '/test.pdf');
+        $renderer->setCalendarEvents($calendar->getCalendarEvents());
+        $renderer->renderCalendar(realpath(__DIR__ . '/../../') . '/test_direct.pdf');
 
-        $renderer = new LandscapeYearMpdf($this->twig);
-        $renderer->setCalendarData($calendar->getData());
-        $renderer->renderData(realpath(__DIR__ . '/../../') . '/test_direct.pdf');
+        //TODO: remove old calendar rendering when direct renderer is done
+        #$cal2 = new LandscapeYear();
+        #$cal2->initCalender(1, 1, 2020);
+        #$cal2->render();
 
-        $cal2 = new LandscapeYear();
-        $cal2->initCalender(1, 1, 2020);
-        $cal2->render();
-
-
-        if ($arg1) {
-            $io->note(sprintf('You passed an argument: %s', $arg1));
-        }
-
-        if ($input->getOption('option1')) {
-            // ...
-        }
 
         $io->success('You have a new command! Now make it your own! Pass --help to see your options.');
 

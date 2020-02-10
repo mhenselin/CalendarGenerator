@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Calendar\Event;
+namespace App\Calendar;
 
-abstract class AbstractEvent
+use App\Calendar\Event\Types;
+
+class Event
 {
-    const EVENT_TYPE_HOLIDAY = 'bankHoliday';
-
     /** @var \DateTime */
     private $start;
 
@@ -14,8 +14,16 @@ abstract class AbstractEvent
 
     private $text;
 
+    /** @var string */
+    private $type;
+
     /** @var array */
     private $additionalInformation;
+
+    public function __construct($type=Types::EVENT_TYPE_CUSTOM)
+    {
+        $this->type = $type;
+    }
 
     public function getStart(): \DateTime
     {
@@ -57,10 +65,18 @@ abstract class AbstractEvent
         $this->additionalInformation = $info;
     }
 
-    public function dayHasEvent(\DteTime $day): bool
+    public function isInRange(\DateTime $start, \DateTime $end): bool
     {
-        return false;
+        if (empty($this->end)) {
+            return ($this->start->format('Y-m-d') >= $start->format('Y-m-d'));
+        }
+
+        return ($this->start->format('Y-m-d') >= $start->format('Y-m-d')) &&
+            ($this->end->format('Y-m-d') <= $end->format('Y-m-d'));
     }
 
-    abstract public function getType():string;
+    public function getType()
+    {
+        return $this->type;
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Calendar;
 
+use App\Calendar\Event;
 use App\Calendar\Unit\Day;
 use App\Calendar\Unit\Month;
 
@@ -14,7 +15,7 @@ class Calendar
     private $calendarData;
 
     /** @var Event[] */
-    private $events;
+    private $events = [];
 
     public function __construct(\DateTime $startDate=null)
     {
@@ -49,20 +50,20 @@ class Calendar
         $day = new Day();
         $day->setDate($date);
 
-        if (!empty($this->events)) {
-            $events = array_filter($this->events, function ($event) use ($date) {
-                if (is_null($event->getEnd())) {
-                    return $event->getStart()->format('Y-m-d') == $date->format('Y-m-d');
-                }
+        #if (!empty($this->events)) {
+        #    $events = array_filter($this->events, function ($event) use ($date) {
+        #        if (is_null($event->getEnd())) {
+        #            return $event->getStart()->format('Y-m-d') == $date->format('Y-m-d');
+        #        }
 
-                $dateString = $date->format('Y-m-d');
-                return (
-                    ($dateString >= $event->getStart()->format('Y-m-d'))
-                    && ($dateString <= $event->getEnd()->format('Y-m-d'))
-                );
-            });
-            $day->setEvents($events);
-        }
+        #        $dateString = $date->format('Y-m-d');
+        #        return (
+        #            ($dateString >= $event->getStart()->format('Y-m-d'))
+        #            && ($dateString <= $event->getEnd()->format('Y-m-d'))
+        #        );
+        #    });
+        #    $day->setEvents($events);
+        #}
         return $day;
     }
 
@@ -82,6 +83,13 @@ class Calendar
         $this->events[] = $event;
     }
 
+    public function addEvents(array $events): void
+    {
+        if (!empty($events)) {
+            $this->events = array_merge($this->events, $events);
+        }
+    }
+
     public function setEvents(array $events)
     {
         $this->events = $events;
@@ -90,5 +98,16 @@ class Calendar
     public function getData(): array
     {
         return $this->calendarData;
+    }
+
+    public function getCalendarEvents(): array
+    {
+        $start = $this->startDate;
+        $end = clone $start;
+        $end->modify('+' . count($this->calendarData) . ' month');
+        return array_filter($this->events, function ($event) use ($start, $end) {
+            /** @var Event $event */
+            return $event->isInRange($start, $end);
+        });
     }
 }

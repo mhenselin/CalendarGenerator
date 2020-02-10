@@ -1,0 +1,45 @@
+<?php
+
+namespace App\Serializer\Normalizer;
+
+use App\Calendar\Event;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Symfony\Component\Serializer\SerializerAwareInterface;
+use Symfony\Component\Serializer\SerializerAwareTrait;
+
+class EventNormalizer implements NormalizerInterface, DenormalizerInterface, SerializerAwareInterface
+{
+    use SerializerAwareTrait;
+
+    public function normalize($object, string $format = null, array $context = [])
+    {
+    }
+
+    public function denormalize($data, string $type, string $format = null, array $context = [])
+    {
+        if (!array_key_exists('date', $data) || !array_key_exists('name', $data)) {
+            return null;
+        }
+
+        $eventType = isset($context['eventType']) ? $context['eventType'] : '';
+        $entity = new Event($eventType);
+        if (isset($data['date'])) {
+            $entity->setStart($this->serializer->denormalize($data['date'], \DateTime::class));
+        }
+
+        $entity->setText($data['name']);
+
+        return $entity;
+    }
+
+    public function supportsNormalization($data, string $format = null)
+    {
+        return is_subclass_of($format, Event::class);
+    }
+
+    public function supportsDenormalization($data, string $type, string $format = null)
+    {
+        return $type === Event::class;
+    }
+}

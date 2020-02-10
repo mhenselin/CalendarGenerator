@@ -4,8 +4,6 @@ namespace App\Command;
 
 use App\Repository\HolidaysRepository;
 use App\Service\ApiCrawler;
-use MessagePack\MessagePack;
-use MessagePack\Packer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

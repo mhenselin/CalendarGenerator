@@ -2,8 +2,11 @@
 
 namespace App\Renderer;
 
+use App\Calendar\Event;
 use App\Calendar\Unit\Day;
 use App\Calendar\Unit\Month;
+use App\Renderer\LandscapeYear\EventRendererFactory;
+use App\Renderer\Pdf\CalendarDimension;
 use App\Renderer\Pdf\MpdfRendererAbstract;
 use Mpdf\Output\Destination;
 
@@ -20,6 +23,9 @@ class LandscapeYearMpdf extends MpdfRendererAbstract
     /** @var Month[] */
     private $calendarData;
 
+    /** @var Event[] */
+    private $calendarEvents;
+
     private $monthCount = 12;
 
     private $crossYears = false;
@@ -29,7 +35,7 @@ class LandscapeYearMpdf extends MpdfRendererAbstract
         7 => self::COLOR_FILL_SO
     ];
 
-    public function renderData(string $file = ''): ?string
+    public function renderCalendar(string $file = ''): ?string
     {
         $this->initMpdf([
             'format' => 'A4-L',
@@ -44,7 +50,8 @@ class LandscapeYearMpdf extends MpdfRendererAbstract
         $this->calculateTableDimentions(count($this->calendarData));
         $this->validateCalendarData();
         $this->renderHeader();
-        $this->renderDayCells();
+        $this->renderData();
+        $this->renderEvents();
 
         $redBorder = $this->hex2rgb(self::COLOR_BORDER_TABLE);
         $this->mpdf->SetDrawColor($redBorder[0], $redBorder[1], $redBorder[2]);
@@ -79,7 +86,7 @@ class LandscapeYearMpdf extends MpdfRendererAbstract
         }
     }
 
-    public function renderDayCells(): void
+    public function renderData(): void
     {
         $this->mpdf->SetFontSize(self::FONT_SIZE_CELL);
         $this->mpdf->SetTextColor(0, 0, 0);
@@ -144,4 +151,28 @@ class LandscapeYearMpdf extends MpdfRendererAbstract
         $this->calendarData = $calendarData;
     }
 
+    public function setCalendarEvents($events): void
+    {
+     $this->calendarEvents = $events;
+    }
+
+    private function renderEvents():void
+    {
+        if (empty($this->calendarEvents)) {
+            return;
+        }
+
+        $dimension = new CalendarDimension();
+        $dimension->setLeft($this->mpdf->lMargin)
+            ->setTop($this->mpdf->tMargin)
+            ->setColumnWidth($this->colWidth)
+            ->setRowHeight($this->rowHeight)
+            ->setHeaderHeight($this->headerHeight);
+
+        /** @var Event $event */
+        foreach ($this->calendarEvents as $event) {
+            $renderer = EventRendererFactory::getRendererFor($event->getType(), $this->mpdf);
+            $renderer->render($event, $dimension);
+        }
+    }
 }

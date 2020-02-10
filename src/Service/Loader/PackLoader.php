@@ -2,8 +2,8 @@
 
 namespace App\Service\Loader;
 
-use App\Calendar\Event\HolidayEvent;
-use App\Serializer\Normalizer\HolidayCalendarNormalizer;
+use App\Calendar\Event;
+use App\Serializer\Normalizer\EventNormalizer;
 use MessagePack\MessagePack;
 use Symfony\Component\Serializer\Encoder\CsvEncoder;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
@@ -17,7 +17,7 @@ class PackLoader extends LoaderAbstract
     {
         $this->serializer = new Serializer(
             [
-                new HolidayCalendarNormalizer(),
+                new EventNormalizer(),
                 new DateTimeNormalizer()
             ]
         );
@@ -26,7 +26,6 @@ class PackLoader extends LoaderAbstract
     public function readHolidays(string $federal): array
     {
         $dataFile = $this->getDataPath() . '/publicHolidays.mpack';
-
         $filteredHolidays = array_filter(
             MessagePack::unpack(file_get_contents($dataFile)),
             function($holiday) use ($federal) {
@@ -36,10 +35,14 @@ class PackLoader extends LoaderAbstract
 
         $holidays = [];
         foreach ($filteredHolidays as $data) {
-            $holidays[] = $this->serializer->denormalize($data['holiday'], HolidayEvent::class);
+            $holidays[] = $this->serializer->denormalize(
+                $data['holiday'],
+                Event::class,
+                null,
+                ['eventType' => Event\Types::EVENT_TYPE_PUBLIC_HOLIDAY]
+            );
         }
         return $holidays;
-
     }
 
 }

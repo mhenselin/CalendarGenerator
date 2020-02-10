@@ -2,6 +2,7 @@
 
 namespace App\Renderer\Pdf;
 
+use App\Calendar\Calendar;
 use Mpdf\Mpdf;
 
 abstract class MpdfRendererAbstract implements RendererInterface
@@ -45,6 +46,9 @@ abstract class MpdfRendererAbstract implements RendererInterface
 
     /** @var Mpdf */
     protected $mpdf;
+
+    /** @var Calendar */
+    protected $calendar;
 
     protected function initMpdf(array $options=[], string $displaymode='fullpage' ): void
     {
@@ -95,5 +99,10 @@ abstract class MpdfRendererAbstract implements RendererInterface
         $rgb = array($r, $g, $b);
 
         return $rgb; // returns an array with the rgb values
+    }
+
+    public function setCalendar(Calendar $calendar): void
+    {
+        $this->calendar = $calendar;
     }
 }

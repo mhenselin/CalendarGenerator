@@ -2,8 +2,8 @@
 
 namespace App\Service\Loader;
 
-use App\Calendar\Event\HolidayEvent;
-use App\Serializer\Normalizer\HolidayCalendarNormalizer;
+use App\Calendar\Event;
+use App\Serializer\Normalizer\EventNormalizer;
 use Symfony\Component\Serializer\Encoder\CsvEncoder;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Serializer\Serializer;
@@ -16,7 +16,7 @@ class CSVLoader extends LoaderAbstract
     {
         $this->serializer = new Serializer(
             [
-                new HolidayCalendarNormalizer(),
+                new EventNormalizer(),
                 new DateTimeNormalizer()
             ],
             [new CsvEncoder()]
@@ -33,7 +33,7 @@ class CSVLoader extends LoaderAbstract
         $holidays = [];
         $csvData = file_get_contents($filename);
         foreach ($this->serializer->decode($csvData, 'csv') as $data) {
-            $holidays[] = $this->serializer->denormalize($data, HolidayEvent::class);
+            $holidays[] = $this->serializer->denormalize($data, Event::class);
         }
         return $holidays;
     }

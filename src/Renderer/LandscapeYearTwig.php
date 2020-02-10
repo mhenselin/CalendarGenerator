@@ -18,7 +18,6 @@ class LandscapeYearTwig implements RendererInterface
         $this->twig = $twig;
     }
 
-
     /**
      * @param mixed $calendarData
      */
@@ -27,7 +26,7 @@ class LandscapeYearTwig implements RendererInterface
         $this->calendarData = $calendarData;
     }
 
-    public function renderData(string $file=''): ?string
+    public function renderCalendar(string $file=''): ?string
     {
         $html = $this->twig->render(
             'calendar/yearlyplaner/calendar.html.twig',
@@ -59,6 +58,10 @@ class LandscapeYearTwig implements RendererInterface
         } else {
             return $mpdf->Output();
         }
+    }
+
+    public function setCalendarEvents($events): void
+    {
     }
 
 }
