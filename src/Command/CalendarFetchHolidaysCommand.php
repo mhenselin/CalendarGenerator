@@ -11,7 +11,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class CalendarFetchPublicHolidaysCommand extends Command
+class CalendarFetchHolidaysCommand extends Command
 {
     protected static $defaultName = 'calendar:fetch:holidays';
 
@@ -33,6 +33,7 @@ class CalendarFetchPublicHolidaysCommand extends Command
         $this
             ->setDescription('Fetches holidays from https://deutsche-feiertage-api.de to store in local file')
             ->addArgument('holidayTypes', InputArgument::REQUIRED, 'Which type to fetch - [public, school]')
+            ->addOption('year', 'y',InputArgument::OPTIONAL,'The year to be fetched - default "this" year');
         ;
     }
 
@@ -44,15 +45,23 @@ class CalendarFetchPublicHolidaysCommand extends Command
             $holidayTypes = explode(',', $input->getArgument('holidayTypes'));
         }
 
+        $year = !empty($input->getOption('year')) ? $input->getOption('year') : date('Y');
+
         if (in_array('public', $holidayTypes)) {
-            $result = $this->apiCrawler->fetchFromDFAPI();
+            $result = $this->apiCrawler->fetchFromDFAPI($year);
             $this->holidayRepo->saveHolidaysToPacked($result);
 
             $io->success('Successfully loaded data from https://deutsche-feiertage-api.de');
         }
 
         if (in_array('school', $holidayTypes)) {
-            $io->error('Fetching school holiday not supported yet');
+            $result = $this->apiCrawler->fetchDataFromSF($year);
+            if (!empty($result)) {
+                $this->holidayRepo->saveSchoolHolidaysToPacked($result);
+                $io->success('Successfully loaded data from https://schulferien.org');
+            } else {
+                $io->error('Returned data is empty - something went wrong!');
+            }
         }
 
         return 0;

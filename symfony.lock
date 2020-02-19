@@ -53,6 +53,9 @@
     "rybakit/msgpack": {
         "version": "v0.6.1"
     },
+    "setasign/fpdf": {
+        "version": "1.8.2"
+    },
     "setasign/fpdi": {
         "version": "v2.2.0"
     },
@@ -80,6 +83,9 @@
     },
     "symfony/dependency-injection": {
         "version": "v5.0.2"
+    },
+    "symfony/dom-crawler": {
+        "version": "v5.0.4"
     },
     "symfony/dotenv": {
         "version": "v5.0.2"

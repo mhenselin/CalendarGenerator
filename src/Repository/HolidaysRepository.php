@@ -53,6 +53,18 @@ class HolidaysRepository
         fclose($f);
     }
 
+    public function saveSchoolHolidaysToPacked(array $data):void
+    {
+        $dataFile = $this->getDataDir() . '/schoolHolidays.mpack';
+
+        $f = fopen($dataFile, 'w+b');
+        if (!empty($data)) {
+            $packedData = MessagePack::pack($data);
+            fwrite($f, $packedData, strlen($packedData));
+        }
+        fclose($f);
+    }
+
     private function getDataDir(): string
     {
         return realpath(__DIR__ . '/../../data');
