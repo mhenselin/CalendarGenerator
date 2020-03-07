@@ -11,38 +11,32 @@ use Symfony\Component\Serializer\Serializer;
 
 class PackLoader extends LoaderAbstract
 {
-    private $serializer;
-
-    public function __construct()
+    public function readSchoolHolidays(string $federal): array
     {
-        $this->serializer = new Serializer(
-            [
-                new EventNormalizer(),
-                new DateTimeNormalizer()
-            ]
+        $dataFile = $this->getDataPath() . '/schoolHolidays.mpack';
+        return array_map(
+            function($vacation) use ($federal) {
+                if (array_key_exists($federal, $vacation)) {
+                    return [
+                        'name' => $vacation['name'],
+                        'start' => $vacation[$federal]['start'],
+                        'end' => $vacation[$federal]['end'],
+                    ];
+                }
+            },
+            MessagePack::unpack(file_get_contents($dataFile)),
         );
     }
 
-    public function readHolidays(string $federal): array
+    public function readPublicHolidays(string $federal): array
     {
         $dataFile = $this->getDataPath() . '/publicHolidays.mpack';
-        $filteredHolidays = array_filter(
+        return array_filter(
             MessagePack::unpack(file_get_contents($dataFile)),
             function($holiday) use ($federal) {
                 return in_array($federal, $holiday['holiday']['regions']);
             }
         );
-
-        $holidays = [];
-        foreach ($filteredHolidays as $data) {
-            $holidays[] = $this->serializer->denormalize(
-                $data['holiday'],
-                Event::class,
-                null,
-                ['eventType' => Event\Types::EVENT_TYPE_PUBLIC_HOLIDAY]
-            );
-        }
-        return $holidays;
     }
 
 }

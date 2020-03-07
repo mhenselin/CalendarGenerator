@@ -7,19 +7,11 @@ use App\Renderer\Pdf\AdditionsRendererInterface;
 use App\Renderer\Pdf\CalendarDimension;
 use Mpdf\Mpdf;
 
-class PublicHolidayRenderer implements AdditionsRendererInterface
+class PublicHolidayRenderer extends AbstractRenderer
 {
     const FONT_SIZE_HOLIDAY = 5;
 
-    /** @var Mpdf */
-    private $mpdf;
-
-    public function setPdfClass($pdfClass): void
-    {
-        $this->mpdf = $pdfClass;
-    }
-
-    public function render(Event $event, CalendarDimension $dimensions = null): void
+    public function render(Event $event, CalendarDimension $dimensions, \DateTime $calendarStart, \DateTime $calendarEnd): void
     {
         $this->mpdf->SetFontSize(self::FONT_SIZE_HOLIDAY);
         $this->mpdf->SetFont('', 'B');
@@ -36,6 +28,5 @@ class PublicHolidayRenderer implements AdditionsRendererInterface
         $this->mpdf->SetXY($x, $y);
         $this->mpdf->WriteText($x,$y, $event->getText());
     }
-
 
 }

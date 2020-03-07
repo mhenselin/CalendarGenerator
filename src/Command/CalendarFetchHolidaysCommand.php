@@ -45,17 +45,25 @@ class CalendarFetchHolidaysCommand extends Command
             $holidayTypes = explode(',', $input->getArgument('holidayTypes'));
         }
 
-        $year = !empty($input->getOption('year')) ? $input->getOption('year') : date('Y');
+        $years = !empty($input->getOption('year')) ?
+            explode(',', $input->getOption('year')) :
+            [date('Y')];
 
         if (in_array('public', $holidayTypes)) {
-            $result = $this->apiCrawler->fetchFromDFAPI($year);
-            $this->holidayRepo->saveHolidaysToPacked($result);
+            $result = [];
+            foreach ($years as $year) {
+                $result = array_merge($this->apiCrawler->fetchFromDFAPI($years), $result);
+            }
+            $this->holidayRepo->savePublicHolidaysToPacked($result);
 
             $io->success('Successfully loaded data from https://deutsche-feiertage-api.de');
         }
 
         if (in_array('school', $holidayTypes)) {
-            $result = $this->apiCrawler->fetchDataFromSF($year);
+            $result = [];
+            foreach ($years as $year) {
+                $result = array_merge($this->apiCrawler->fetchDataFromSF($year), $result);
+            }
             if (!empty($result)) {
                 $this->holidayRepo->saveSchoolHolidaysToPacked($result);
                 $io->success('Successfully loaded data from https://schulferien.org');

@@ -49,4 +49,14 @@ class Month
     {
         return isset($this->days[$day]) ? $this->days[$day] : null;
     }
+
+    public function getFirstDay(): ?Day
+    {
+        return isset($this->days[1]) ? $this->days[1] : null;
+    }
+
+    public function getLastDay(): ?Day
+    {
+        return count($this->days) != 0 ? $this->days[count($this->days)] : null;
+    }
 }

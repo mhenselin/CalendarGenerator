@@ -32,7 +32,8 @@ class CalendarGenerateCommand extends Command
             ->setDescription('Add a short description for your command')
             ->addArgument('startdate', InputArgument::REQUIRED, 'Argument description')
             ->addOption('option1', null, InputOption::VALUE_NONE, 'Option description')
-            ->addOption('publicholidays', null, InputOption::VALUE_OPTIONAL, 'IUse public holidays for federal country')
+            ->addOption('publicholidays', null, InputOption::VALUE_OPTIONAL, 'Use public holidays for federal country')
+            ->addOption('schoolholidays', null, InputOption::VALUE_OPTIONAL, 'Use school holidays for federal country')
         ;
     }
 
@@ -43,14 +44,23 @@ class CalendarGenerateCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $arg1 = $input->getArgument('startdate');
         $publicHolidaysFor = $input->getOption('publicholidays');
+        $schoolHolidaysFor = $input->getOption('schoolholidays');
 
         $startDate = new \DateTime($arg1);
         $calendar = new Calendar($startDate);
         $io->title('Starting calender generation with startdate ' . $startDate->format('Y-m-d'));
 
-        $io->text('* loading holidays for ' . $publicHolidaysFor);
-        $holidays = $this->holidayRepo->getPackedHolidays($publicHolidaysFor);
-        $calendar->addEvents($holidays);
+        if (!empty($publicHolidaysFor)) {
+            $io->text('* loading holidays for ' . $publicHolidaysFor);
+            $holidays = $this->holidayRepo->getPackedPublicHolidays($publicHolidaysFor);
+            $calendar->addEvents($holidays);
+        }
+
+        if (!empty($schoolHolidaysFor)) {
+            $io->text('* loading school vacations for ' . $schoolHolidaysFor);
+            $vacations = $this->holidayRepo->getPackedSchoolHolidays($schoolHolidaysFor);
+            $calendar->addEvents($vacations);
+        }
 
         //TODO: add argument/option for csv-files when not fetching data beforehand
         #$this->holidayRepo->loadHolidaysFromCsv('Bayern');

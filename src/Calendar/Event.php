@@ -68,11 +68,10 @@ class Event
     public function isInRange(\DateTime $start, \DateTime $end): bool
     {
         if (empty($this->end)) {
-            return ($this->start->format('Y-m-d') >= $start->format('Y-m-d'));
+            return ($this->start >= $start);
         }
 
-        return ($this->start->format('Y-m-d') >= $start->format('Y-m-d')) &&
-            ($this->end->format('Y-m-d') <= $end->format('Y-m-d'));
+        return ($this->start >= $start) && ($this->end <= $end);
     }
 
     public function getType()

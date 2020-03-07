@@ -8,6 +8,7 @@ use App\Calendar\Unit\Month;
 use App\Renderer\LandscapeYear\EventRendererFactory;
 use App\Renderer\Pdf\CalendarDimension;
 use App\Renderer\Pdf\MpdfRendererAbstract;
+use App\Service\RenderUtils;
 use Mpdf\Output\Destination;
 
 class LandscapeYearMpdf extends MpdfRendererAbstract
@@ -29,6 +30,12 @@ class LandscapeYearMpdf extends MpdfRendererAbstract
     private $monthCount = 12;
 
     private $crossYears = false;
+
+    /** @var int */
+    private $calendarStartsAt;
+
+    /** @var int */
+    private $calendarEndsAt;
 
     private $fillColorWeekday = [
         6 => self::COLOR_FILL_SA,
@@ -53,7 +60,7 @@ class LandscapeYearMpdf extends MpdfRendererAbstract
         $this->renderData();
         $this->renderEvents();
 
-        $redBorder = $this->hex2rgb(self::COLOR_BORDER_TABLE);
+        $redBorder = RenderUtils::hex2rgb(self::COLOR_BORDER_TABLE);
         $this->mpdf->SetDrawColor($redBorder[0], $redBorder[1], $redBorder[2]);
         $this->mpdf->Rect(
             $this->mpdf->lMargin-2,
@@ -74,8 +81,8 @@ class LandscapeYearMpdf extends MpdfRendererAbstract
     {
         $this->mpdf->SetFontSize(self::FONT_SIZE_HEADER);
         $this->mpdf->SetFont('', 'B');
-        $borderColor = $this->hex2rgb(self::COLOR_BORDER_HEADER);
-        $textColor = $this->hex2rgb(self::COLOR_TEXT_HEADER);
+        $borderColor = RenderUtils::hex2rgb(self::COLOR_BORDER_HEADER);
+        $textColor = RenderUtils::hex2rgb(self::COLOR_TEXT_HEADER);
         $this->mpdf->SetDrawColor($borderColor[0], $borderColor[1], $borderColor[2]);
         $this->mpdf->SetTextColor($textColor[0], $textColor[1], $textColor[2]);
 
@@ -131,7 +138,7 @@ class LandscapeYearMpdf extends MpdfRendererAbstract
         if ($day->getDayOfWeek() > 5) {
             $colorData['fill'] = 1;
             if (isset($this->fillColorWeekday[$dow])) {
-                $colorData['color'] = $this->hex2rgb($this->fillColorWeekday[$dow]);
+                $colorData['color'] = RenderUtils::hex2rgb($this->fillColorWeekday[$dow]);
             }
         }
 
@@ -141,6 +148,10 @@ class LandscapeYearMpdf extends MpdfRendererAbstract
     {
         $this->monthCount = count($this->calendarData);
         $this->crossYears = $this->calendarData[0]->getYear() != $this->calendarData[$this->monthCount-1]->getYear();
+        $firstDay = $this->calendarData[0]->getFirstDay();
+        $lastDay = $this->calendarData[$this->monthCount-1]->getLastDay();
+        $this->calendarStartsAt = !empty($firstDay) ? $firstDay->getDate() : 0;
+        $this->calendarEndsAt = !empty($lastDay) ? $lastDay->getDate() : 0;
     }
 
     /**
@@ -172,7 +183,7 @@ class LandscapeYearMpdf extends MpdfRendererAbstract
         /** @var Event $event */
         foreach ($this->calendarEvents as $event) {
             $renderer = EventRendererFactory::getRendererFor($event->getType(), $this->mpdf);
-            $renderer->render($event, $dimension);
+            $renderer->render($event, $dimension, $this->calendarStartsAt, $this->calendarEndsAt);
         }
     }
 }

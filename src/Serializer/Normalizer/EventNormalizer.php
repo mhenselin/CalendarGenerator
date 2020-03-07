@@ -18,14 +18,21 @@ class EventNormalizer implements NormalizerInterface, DenormalizerInterface, Ser
 
     public function denormalize($data, string $type, string $format = null, array $context = [])
     {
-        if (!array_key_exists('date', $data) || !array_key_exists('name', $data)) {
+        if (!array_key_exists('name', $data)) {
             return null;
         }
 
         $eventType = isset($context['eventType']) ? $context['eventType'] : '';
         $entity = new Event($eventType);
-        if (isset($data['date'])) {
+        if (isset($data['date']) && !isset($data['start'])) {
             $entity->setStart($this->serializer->denormalize($data['date'], \DateTime::class));
+        }
+
+        if (isset($data['start'])) {
+            $entity->setStart($this->serializer->denormalize($data['start'], \DateTime::class));
+        }
+        if (isset($data['end'])) {
+            $entity->setEnd($this->serializer->denormalize($data['end'], \DateTime::class));
         }
 
         $entity->setText($data['name']);

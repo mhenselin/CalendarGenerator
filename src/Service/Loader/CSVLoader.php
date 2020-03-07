@@ -23,7 +23,7 @@ class CSVLoader extends LoaderAbstract
         );
     }
 
-    public function readHolidays(string $federal): array
+    public function readPublicHolidays(string $federal): array
     {
         $filename = $this->getDataPath() . '/holidays/Holidays_' . $federal . '.csv';
         if (!file_exists($filename)) {
