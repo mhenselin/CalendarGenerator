@@ -1,0 +1,21 @@
+language: php
+
+sudo: false
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+
+php:
+  - 7.2
+  - 7.3
+
+matrix:
+  fast_finish: true
+
+install:
+  - composer selfupdate
+  - composer install
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
