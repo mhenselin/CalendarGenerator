@@ -62,29 +62,16 @@ class CalendarGenerateCommand extends Command
             $calendar->addEvents($vacations);
         }
 
-        //TODO: add argument/option for csv-files when not fetching data beforehand
-        #$this->holidayRepo->loadHolidaysFromCsv('Bayern');
-        #$calendar->setEvents($this->holidayRepo->getHolidays());
         $io->text('* generating calendar');
         $calendar->generateCalendarData();
-
-        //TODO: add argument/option to decide which renderer
-        #$renderer = new LandscapeYearTwig($this->twig);
-        #$renderer->setCalendarData($calendar->getData());
-        #$renderer->renderData(realpath(__DIR__ . '/../../') . '/test.pdf');
 
         $io->text('* rendering calendar');
         $io->newLine();
         $renderer = new LandscapeYearMpdf();
         $renderer->setCalendarData($calendar->getData());
-        $renderer->setCalendarEvents($calendar->getCalendarEvents());
+        /** TODO: do not pass events through calendar - renderer can filter */
+        $renderer->setCalendarEvents($calendar->getActiveCalendarEvents());
         $renderer->renderCalendar(realpath(__DIR__ . '/../../') . '/test_direct.pdf');
-
-        //TODO: remove old calendar rendering when direct renderer is done
-        #$cal2 = new LandscapeYear();
-        #$cal2->initCalender(1, 1, 2020);
-        #$cal2->render();
-
 
         $io->success('You have a new command! Now make it your own! Pass --help to see your options.');
 

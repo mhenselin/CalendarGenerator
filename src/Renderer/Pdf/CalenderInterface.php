@@ -36,9 +36,6 @@ interface CalenderInterface
     public function render($size='a4');
     
     /**
-     * @param int $startMonth
-     * @param int $startYear
-     * 
      * @return Calender_Pdf_Interface
      */
     public function drawCalender();

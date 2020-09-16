@@ -12,13 +12,17 @@ class Calendar
     private $startDate;
 
     /** @var array */
-    private $calendarData;
+    private $calendarData = [];
 
     /** @var Event[] */
     private $events = [];
 
     public function __construct(\DateTime $startDate=null)
     {
+        if (empty($startDate)) {
+            $startDate = new \DateTime();
+        }
+
         $this->setStartDate($startDate);
     }
 
@@ -50,20 +54,6 @@ class Calendar
         $day = new Day();
         $day->setDate($date);
 
-        #if (!empty($this->events)) {
-        #    $events = array_filter($this->events, function ($event) use ($date) {
-        #        if (is_null($event->getEnd())) {
-        #            return $event->getStart()->format('Y-m-d') == $date->format('Y-m-d');
-        #        }
-
-        #        $dateString = $date->format('Y-m-d');
-        #        return (
-        #            ($dateString >= $event->getStart()->format('Y-m-d'))
-        #            && ($dateString <= $event->getEnd()->format('Y-m-d'))
-        #        );
-        #    });
-        #    $day->setEvents($events);
-        #}
         return $day;
     }
 
@@ -100,7 +90,7 @@ class Calendar
         return $this->calendarData;
     }
 
-    public function getCalendarEvents(): array
+    public function getActiveCalendarEvents(): array
     {
         $start = $this->startDate;
         $end = clone $start;
