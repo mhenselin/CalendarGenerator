@@ -5,7 +5,7 @@ namespace App\Calendar\Unit;
 class Month
 {
     /** @var Day[] */
-    private $days;
+    private $days = [];
 
     private $name;
 
@@ -22,7 +22,12 @@ class Month
      */
     public function setDays(array $days): void
     {
-        $this->days = $days;
+        foreach ($days as $key => $day) {
+            if (!is_object($day) || get_class($day) !== Day::class) {
+                throw new \Exception('Days to be set contain non Day object at key ' . $key);
+            }
+            $this->days[$day->getDay()] = $day;
+        }
     }
 
     public function addDay(Day $day): void

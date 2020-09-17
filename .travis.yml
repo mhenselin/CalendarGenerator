@@ -1,5 +1,8 @@
 language: php
 
+branches:
+  except:
+    - v0.9
 sudo: false
 
 cache:

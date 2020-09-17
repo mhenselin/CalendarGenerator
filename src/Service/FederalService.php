@@ -23,13 +23,14 @@ class FederalService
         ['ST','Sachsen-Anhalt','Magdeburg '],
         ['TH','Thüringen','Erfurt']);
 
-    public function getAbbrevationByFullName($name)
+    public function getAbbrevationByFullName($name) :string
     {
         $result = array_filter($this->federalMapping, function ($row) use ($name) {
                return $name === $row[1];
             });
         $result = array_shift($result);
-        return $result[0];
+
+        return !empty($result) ? $result[0] : '';
     }
 
 }

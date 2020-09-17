@@ -6,7 +6,6 @@ use App\Calendar\Calendar;
 use App\Calendar\Event;
 use App\Calendar\Event\Types;
 use App\Calendar\Unit\Month;
-use Cassandra\Date;
 use PHPUnit\Framework\TestCase;
 
 class CalendarTest extends TestCase
@@ -55,6 +54,7 @@ class CalendarTest extends TestCase
         $pastEvent->setEnd(new \DateTime(strftime('-1 day')));
         $pastEvent->setText('FutureEvent');
 
+        $eventWithoutEnd = new Event(Types::EVENT_TYPE_CUSTOM);
         return [
             [
                 [],
@@ -90,6 +90,21 @@ class CalendarTest extends TestCase
         $calendar->setEvents($events);
         $events = $calendar->getActiveCalendarEvents();
 
+        $this->assertEquals($expected, $events);
+    }
+
+    /**
+     * @dataProvider getEventTestData
+     */
+    public function testAddEvent(array $events, array $expected)
+    {
+        $calendar = new Calendar();
+        $calendar->generateCalendarData();
+
+        $calendar->addEvents($events);
+        $calendar->addEvent(new Event(Types::EVENT_TYPE_CUSTOM));
+
+        $events = $calendar->getActiveCalendarEvents();
         $this->assertEquals($expected, $events);
     }
 }
