@@ -52,7 +52,7 @@ class CalendarFetchHolidaysCommand extends Command
         if (in_array('public', $holidayTypes)) {
             $result = [];
             foreach ($years as $year) {
-                $result = array_merge($this->apiCrawler->fetchFromDFAPI($years), $result);
+                $result = array_merge($this->apiCrawler->fetchFromDFAPI($year), $result);
             }
             $this->holidayRepo->savePublicHolidaysToPacked($result);
 

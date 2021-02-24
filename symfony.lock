@@ -47,6 +47,9 @@
     "psr/log": {
         "version": "1.1.2"
     },
+    "roave/security-advisories": {
+        "version": "dev-master"
+    },
     "rybakit/msgpack": {
         "version": "v0.6.1"
     },
@@ -136,6 +139,9 @@
             "src/Controller/.gitignore",
             "src/Kernel.php"
         ]
+    },
+    "symfony/http-client-contracts": {
+        "version": "v2.3.1"
     },
     "symfony/http-foundation": {
         "version": "v5.0.2"
