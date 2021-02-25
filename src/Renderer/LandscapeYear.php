@@ -3,10 +3,8 @@ namespace App\Renderer;
 
 use App\Renderer\Pdf\Calender;
 use App\Renderer\Pdf\CalenderAbstract;
-use App\Renderer\Pdf\CalenderInterface;
 
-class LandscapeYear extends CalenderAbstract implements CalenderInterface
-{
+class LandscapeYear extends CalenderAbstract {
     const COLOR_SA = 'FFDBDB';
     const COLOR_SO = 'FFA3B2';
     const COLOR_HOLIDAY = 'FFA3B2';

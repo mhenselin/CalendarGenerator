@@ -2,41 +2,63 @@
 
 namespace App\Calendar\Unit;
 
+use Carbon\Carbon;
+
 class Day
 {
-    /** @var \DateTime */
+    /** @var Carbon $date */
     private $date;
 
+	/**
+	 * @param \DateTime|Carbon $date
+	 */
     public function setDate(\DateTime $date):void
     {
-        $this->date = $date;
+    	Carbon::setLocale('de');
+        $this->date = Carbon::parse($date);
     }
 
+	/**
+	 * @return int
+	 */
     public function getDay(): int
     {
-        return $this->date->format('j');
+        return $this->date->day;
     }
 
+	/**
+	 * @return string
+	 */
     public function getWeekdayName(): string
     {
-        return strftime('%a', $this->date->getTimestamp());
+        return $this->date->locale('de')->shortDayName;
     }
 
-    public function getFormatedDate($showWeekdayName=true)
-    {
-        return strftime(
-            $showWeekdayName ? '%d %a' : '%d',
-            $this->date->getTimestamp()
-        );
+	/**
+	 * @param bool $showWeekdayName
+	 * @return string
+	 */
+    public function getFormattedDate($showWeekdayName=true): string
+	{
+    	if ($showWeekdayName) {
+    		return $this->date->day . ' ' . $this->date->locale('de')->shortDayName;
+		}
+        return $this->date->day;
     }
 
-    public function getDate()
+	/**
+	 * @return Carbon
+	 */
+    public function getDate(): Carbon
     {
         return $this->date;
     }
 
-    public function getDayOfWeek()
+	/**
+	 * @return int
+	 */
+    public function getDayOfWeek(): int
     {
-        return $this->date->format('N');
+        return $this->date->dayOfWeek;
     }
 }

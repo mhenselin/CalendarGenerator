@@ -16,5 +16,6 @@
 
 .devcontainer/
 .vscode/
+.idea/
 coverage.xml
 /test_direct.pdf

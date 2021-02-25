@@ -2,9 +2,9 @@
 
 namespace App\Calendar;
 
-use App\Calendar\Event;
 use App\Calendar\Unit\Day;
 use App\Calendar\Unit\Month;
+use Carbon\Carbon;
 
 class Calendar
 {
@@ -19,22 +19,22 @@ class Calendar
 
     public function __construct(\DateTime $startDate=null)
     {
-        if (empty($startDate)) {
-            $startDate = new \DateTime();
-        }
-
-        $this->setStartDate($startDate);
+//        if ($startDate === null) {
+//            $startDate = new \DateTime();
+//        }
+//        $this->setStartDate($startDate);
+		$this->setStartDate($startDate ?? Carbon::now());
     }
 
     public function generateCalendarData(int $numberOfMonths = 12): Calendar
     {
-        $date = clone $this->startDate;
+		$date = clone $this->startDate;
         $this->resetCalendar();
 
         for ($i=0; $i<$numberOfMonths; $i++) {
-            $month = new Month(
-                strftime('%B', $date->getTimestamp()),
-                $date->format('Y')
+			$month = new Month(
+				$date->locale('de')->monthName,
+                $date->year
             );
             for ($day=1; $day<=$date->format('t'); $day++) {
                 $month->addDay(
@@ -48,8 +48,13 @@ class Calendar
         return $this;
     }
 
-    private function prepareDayObject($shortDate)
-    {
+	/**
+	 * @param $shortDate
+	 * @return Day
+	 * @throws \Exception
+	 */
+    private function prepareDayObject($shortDate): Day
+	{
         $date = new \DateTime($shortDate);
         $day = new Day();
         $day->setDate($date);

@@ -7,7 +7,6 @@ use App\Service\ApiCrawler;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -28,7 +27,10 @@ class CalendarFetchHolidaysCommand extends Command
         parent::__construct($name);
     }
 
-    protected function configure()
+	/**
+	 * configuration of the command
+	 */
+    protected function configure(): void
     {
         $this
             ->setDescription('Fetches holidays from https://deutsche-feiertage-api.de to store in local file')
@@ -37,10 +39,16 @@ class CalendarFetchHolidaysCommand extends Command
         ;
     }
 
+	/**
+	 * @param InputInterface $input
+	 * @param OutputInterface $output
+	 * @return int
+	 */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
+        $holidayTypes = [];
         if ($input->hasArgument('holidayTypes')) {
             $holidayTypes = explode(',', $input->getArgument('holidayTypes'));
         }
@@ -49,21 +57,23 @@ class CalendarFetchHolidaysCommand extends Command
             explode(',', $input->getOption('year')) :
             [date('Y')];
 
-        if (in_array('public', $holidayTypes)) {
+        if (in_array('public', $holidayTypes,TRUE)) {
             $result = [];
             foreach ($years as $year) {
-                $result = array_merge($this->apiCrawler->fetchFromDFAPI($year), $result);
+                $result[] = $this->apiCrawler->fetchFromDFAPI($year);
             }
+			$result = array_merge(...$result);
             $this->holidayRepo->savePublicHolidaysToPacked($result);
 
             $io->success('Successfully loaded data from https://deutsche-feiertage-api.de');
         }
 
-        if (in_array('school', $holidayTypes)) {
+        if (in_array('school',$holidayTypes,TRUE)) {
             $result = [];
             foreach ($years as $year) {
-                $result = array_merge($this->apiCrawler->fetchDataFromSF($year), $result);
+                $result[] = $this->apiCrawler->fetchDataFromSF($year);
             }
+			$result = array_merge(...$result);
             if (!empty($result)) {
                 $this->holidayRepo->saveSchoolHolidaysToPacked($result);
                 $io->success('Successfully loaded data from https://schulferien.org');

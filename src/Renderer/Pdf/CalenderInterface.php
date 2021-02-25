@@ -33,7 +33,7 @@ interface CalenderInterface
      * 
      * @return mixed
      */
-    public function render($size='a4');
+    public function render(string $size='a4');
     
     /**
      * @return Calender_Pdf_Interface

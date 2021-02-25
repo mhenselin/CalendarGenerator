@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Renderer\Pdf;
 
 abstract class CalenderAbstract implements CalenderInterface
@@ -82,8 +83,7 @@ abstract class CalenderAbstract implements CalenderInterface
     /**
      * @return bool
      */
-    public function showHolidays()
-    {
+    public function showHolidays(): bool {
         return $this->_showHolidays;
     }
     
@@ -98,8 +98,7 @@ abstract class CalenderAbstract implements CalenderInterface
     /**
      * @return bool
      */
-    public function showSpecialEvents()
-    {
+    public function showSpecialEvents(): bool {
         return $this->_showEvents;
     }
     
@@ -112,9 +111,10 @@ abstract class CalenderAbstract implements CalenderInterface
     }
     
     /**
-     * @return the $_useCalenderWeek
+	 * the calendar week
+	 * @return bool $_useCalenderWeek
      */
-    public function showCalenderWeeks() {
+    public function showCalenderWeeks(): bool {
         return $this->_showCalenderWeek;
     }
 
@@ -125,21 +125,20 @@ abstract class CalenderAbstract implements CalenderInterface
         $this->_showCalenderWeek = $enabled;
     }
 
-    
-    /**
-     * renders the calender using the interface-defined "drawCalender" 
-     * 
-     * @param int $startMonth
-     * @param int $startYear
-     */
-    public function render($size='a4')
+
+	/**
+	 * @param string $size
+	 * @return mixed|void
+	 */
+    public function render(string $size='a4', string $outputPath = '/tmp')
     {
         $this->initPdf($size);
         $this->preRender();
         $this->drawCalender();
         $this->postRender();
 
-        $this->getPdfClass()->Output('/Users/mathias.kuehn/priv-sources/CalendarGenerator/test_old.pdf', 'F');
+        $this->getPdfClass()
+			->Output($outputPath . '/test_old.pdf', 'F');
     }
     
 	/* (non-PHPdoc)
@@ -174,9 +173,5 @@ abstract class CalenderAbstract implements CalenderInterface
      */
     public function preRender() {
         // generated method stub
-        
     }
-
-
-
 }

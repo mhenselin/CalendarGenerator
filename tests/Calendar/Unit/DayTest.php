@@ -17,8 +17,8 @@ class DayTest extends TestCase
         $this->assertEquals(17, $day->getDay());
         $this->assertEquals(4, $day->getDayOfWeek());
         $this->assertEquals('Thu', $day->getWeekdayName());
-        $this->assertEquals('17 Thu', $day->getFormatedDate());
-        $this->assertEquals('17', $day->getFormatedDate(false));
+        $this->assertEquals('17 Thu', $day->getFormattedDate());
+        $this->assertEquals('17', $day->getFormattedDate(false));
     }
 
     public function testFailAddDateTime()
